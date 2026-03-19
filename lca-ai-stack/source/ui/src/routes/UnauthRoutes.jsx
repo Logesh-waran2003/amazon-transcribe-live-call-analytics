@@ -1,66 +1,89 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { Auth, Hub } from 'aws-amplify';
+import { LOGIN_PATH, LOGOUT_PATH } from './constants';
 
-import {
-  AmplifyAuthContainer,
-  AmplifyAuthenticator,
-  AmplifySignIn,
-  AmplifySignUp,
-} from '@aws-amplify/ui-react';
+const SSORedirect = () => {
+  const hasAttempted = useRef(false);
+  const [authError, setAuthError] = useState(null);
 
-import { LOGIN_PATH, LOGOUT_PATH, REDIRECT_URL_PARAM } from './constants';
+  useEffect(() => {
+    console.log('🔄 UnauthRoutes: SSORedirect rendered');
+    console.log('🔄 UnauthRoutes: Full URL:', window.location.href);
 
-// this is set at build time depending on the AllowedSignUpEmailDomain CloudFormation parameter
-const { REACT_APP_SHOULD_HIDE_SIGN_UP = 'true' } = process.env;
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
 
-const UnauthRoutes = ({ location }) => (
+    console.log('🔄 UnauthRoutes: code in URL:', code ? 'YES' : 'NO');
+    console.log('🔄 UnauthRoutes: error in URL:', error || 'none');
+
+    // OAuth callback — let Amplify process it, don't re-trigger SSO
+    if (code || error) {
+      console.log('✅ UnauthRoutes: OAuth callback detected, waiting for Amplify to process');
+      return;
+    }
+
+    // Already attempted SSO this session — don't loop
+    if (hasAttempted.current) {
+      console.log('⚠️ UnauthRoutes: SSO already attempted, not retrying');
+      return;
+    }
+
+    hasAttempted.current = true;
+
+    // Listen for auth failures so we can show an error instead of looping
+    const unsubscribe = Hub.listen('auth', ({ payload: { event, data } }) => {
+      if (event === 'cognitoHostedUI_failure' || event === 'signIn_failure') {
+        console.log('❌ UnauthRoutes: Auth failure event:', event, data);
+        setAuthError(data?.message || 'Authentication failed. Please try again.');
+        unsubscribe();
+      }
+    });
+
+    const initiateSSO = async () => {
+      try {
+        console.log('🚀 UnauthRoutes: Initiating SSO via federatedSignIn');
+        await Auth.federatedSignIn({ provider: 'EntraID' });
+      } catch (err) {
+        console.log('❌ UnauthRoutes: federatedSignIn failed:', err);
+        setAuthError(err?.message || 'Failed to initiate login. Please refresh and try again.');
+        unsubscribe();
+      }
+    };
+
+    initiateSSO();
+
+    return () => unsubscribe();
+  }, []);
+
+  if (authError) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <p style={{ color: 'red' }}>Authentication error: {authError}</p>
+        <button type="button" onClick={() => { hasAttempted.current = false; setAuthError(null); }}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <p>Redirecting to Entra ID for authentication...</p>
+    </div>
+  );
+};
+
+const UnauthRoutes = () => (
   <Switch>
-    <Route path={LOGIN_PATH}>
-      <AmplifyAuthContainer>
-        <AmplifyAuthenticator>
-          <AmplifySignIn
-            headerText="Welcome to Live Call Analytics!"
-            hideSignUp={REACT_APP_SHOULD_HIDE_SIGN_UP}
-            slot="sign-in"
-          />
-          <AmplifySignUp
-            headerText="Welcome to Live Call Analytics!"
-            slot="sign-up"
-            h
-            usernameAlias="email"
-            formFields={[
-              {
-                type: 'email',
-                inputProps: { required: true, autocomplete: 'email' },
-              },
-              { type: 'password' },
-            ]}
-          />
-        </AmplifyAuthenticator>
-      </AmplifyAuthContainer>
-    </Route>
     <Route path={LOGOUT_PATH}>
       <Redirect to={LOGIN_PATH} />
     </Route>
     <Route>
-      <Redirect
-        to={{
-          pathname: LOGIN_PATH,
-          search: `?${REDIRECT_URL_PARAM}=${location.pathname}${location.search}`,
-        }}
-      />
+      <SSORedirect />
     </Route>
   </Switch>
 );
-
-UnauthRoutes.propTypes = {
-  location: PropTypes.shape({
-    pathname: PropTypes.string,
-    search: PropTypes.string,
-  }).isRequired,
-};
 
 export default UnauthRoutes;

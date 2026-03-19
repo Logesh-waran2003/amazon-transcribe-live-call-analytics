@@ -1,16 +1,14 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
-import { useState, useEffect } from 'react';
 import Amplify from 'aws-amplify';
 import awsExports from '../aws-exports';
 
-const useAwsConfig = () => {
-  const [awsConfig, setAwsConfig] = useState();
-  useEffect(() => {
-    Amplify.configure(awsExports);
-    setAwsConfig(awsExports);
-  }, [awsExports]);
-  return awsConfig;
-};
+// awsExports is a static import — configure once synchronously so the OAuth
+// callback (?code=...) is processed immediately on page load, before any
+// React render cycle. This avoids the race condition where cognitoHostedUI
+// fires before Hub listeners are registered.
+Amplify.configure(awsExports);
+console.log('✅ useAwsConfig: Amplify configured synchronously');
+console.log('🔧 useAwsConfig: oauth config:', awsExports.oauth);
+
+const useAwsConfig = () => awsExports;
 
 export default useAwsConfig;
