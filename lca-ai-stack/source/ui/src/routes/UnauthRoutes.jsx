@@ -44,7 +44,7 @@ const SSORedirect = () => {
     const initiateSSO = async () => {
       try {
         console.log('🚀 UnauthRoutes: Initiating SSO via federatedSignIn');
-        await Auth.federatedSignIn({ provider: 'EntraID' });
+        await Auth.federatedSignIn({ customProvider: 'EntraID' });
       } catch (err) {
         console.log('❌ UnauthRoutes: federatedSignIn failed:', err);
         setAuthError(err?.message || 'Failed to initiate login. Please refresh and try again.');
