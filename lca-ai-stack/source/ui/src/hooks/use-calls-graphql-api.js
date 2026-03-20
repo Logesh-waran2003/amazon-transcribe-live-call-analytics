@@ -25,12 +25,18 @@ const useCallsGraphQlApi = ({ initialPeriodsToLoad = CALL_LIST_SHARDS_PER_DAY * 
   const [calls, setCalls] = useState([]);
   const [liveTranscriptCallId, setLiveTranscriptCallId] = useState();
   const [callTranscriptPerCallId, setCallTranscriptPerCallId] = useState({});
-  const { setErrorMessage } = useAppContext();
+  const { setErrorMessage, user } = useAppContext();
+  const userEmail = user?.attributes?.email ||
+    (user?.username?.includes('_') ? user.username.split('_').slice(1).join('_') : user?.username) ||
+    '';
 
   const setCallsDeduped = (callValues) => {
+    const filtered = userEmail
+      ? callValues.filter((c) => c?.AgentId?.toLowerCase().includes(userEmail.toLowerCase()))
+      : callValues;
     setCalls((currentCalls) => {
-      const callValuesCallIds = callValues.map((c) => c.CallId);
-      return [...currentCalls.filter((c) => !callValuesCallIds.includes(c.CallId)), ...callValues];
+      const callValuesCallIds = filtered.map((c) => c.CallId);
+      return [...currentCalls.filter((c) => !callValuesCallIds.includes(c.CallId)), ...filtered];
     });
   };
 

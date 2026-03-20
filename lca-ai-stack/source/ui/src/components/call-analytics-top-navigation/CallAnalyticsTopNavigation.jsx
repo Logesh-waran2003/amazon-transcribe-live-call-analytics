@@ -50,7 +50,9 @@ const SignOutModal = ({ visible, setVisible }) => {
 
 const CallAnalyticsTopNavigation = () => {
   const { user } = useAppContext();
-  const userId = user?.attributes?.email || 'user';
+  const userId = user?.attributes?.email ||
+    (user?.username?.includes('_') ? user.username.split('_').slice(1).join('_') : user?.username) ||
+    'user';
   const [isSignOutModalVisible, setIsSignOutModalVisiblesetVisible] = useState(false);
   return (
     <>
