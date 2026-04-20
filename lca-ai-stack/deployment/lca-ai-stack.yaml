@@ -1687,6 +1687,10 @@ Resources:
           AttributeDataType: String
           Mutable: true
           Required: true
+        - Name: email_alias
+          AttributeDataType: String
+          Mutable: true
+          Required: false
       UserPoolName: !Sub "${AWS::StackName}-UserPool"
       UsernameAttributes:
         - email
@@ -1708,8 +1712,25 @@ Resources:
         - email_verified
         - preferred_username
       RefreshTokenValidity: 30
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - phone
+      CallbackURLs:
+        - !Sub "https://${WebAppCloudFrontDistribution.DomainName}"
+      LogoutURLs:
+        - !Sub "https://${WebAppCloudFrontDistribution.DomainName}"
       SupportedIdentityProviders:
         - COGNITO
+        - EntraID
+      ReadAttributes:
+        - email
+        - email_verified
+        - preferred_username
+        - custom:email_alias
       UserPoolId: !Ref UserPool
 
   IdentityPool:
@@ -1838,9 +1859,30 @@ Resources:
               process.env?.ALLOWED_SIGNUP_EMAIL_DOMAINS
               .split(",").map(domain => {return domain.trim()})
           );
-          const { email } = event.request?.userAttributes;
+
+          if (event.triggerSource === 'PreSignUp_ExternalProvider') {
+            const customEmailAlias = event.request?.userAttributes?.['custom:email_alias'] || '';
+            const userName = event.userName || '';
+            const parts = userName.split('_');
+            const emailFromUsername = parts.slice(1).join('_');
+            const email = customEmailAlias || emailFromUsername;
+            if (email && email.includes('@')) {
+              const emailDomain = email.split('@')[1];
+              if (allowed_domains.includes(emailDomain)) {
+                event.response.autoConfirmUser = true;
+                event.response.autoVerifyEmail = true;
+                return event;
+              } else {
+                throw new Error('Invalid email address domain');
+              }
+            }
+            throw new Error('Unable to determine email from SSO username');
+          }
+
+          const userAttributes = event.request?.userAttributes || {};
+          const email = userAttributes['custom:email_alias'] || userAttributes['email'] || '';
           if (!email || !email.includes('@')) {
-            throw Error('Username does not exists or invalid email address');
+            throw Error('Username does not exist or invalid email address');
           }
           const emailDomain = email?.split('@')[1];
           if (!emailDomain || !allowed_domains) {

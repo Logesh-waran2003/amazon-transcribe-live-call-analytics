@@ -26,7 +26,8 @@ const useCallsGraphQlApi = ({ initialPeriodsToLoad = CALL_LIST_SHARDS_PER_DAY * 
   const [liveTranscriptCallId, setLiveTranscriptCallId] = useState();
   const [callTranscriptPerCallId, setCallTranscriptPerCallId] = useState({});
   const { setErrorMessage, user } = useAppContext();
-  const userEmail = user?.attributes?.email ||
+  const userEmail = user?.attributes?.['custom:email_alias'] ||
+    user?.attributes?.email ||
     (user?.username?.includes('_') ? user.username.split('_').slice(1).join('_') : user?.username) ||
     '';
 

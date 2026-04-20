@@ -1,36 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Auth, Hub } from 'aws-amplify';
 import { LOGIN_PATH, LOGOUT_PATH } from './constants';
 
+const SSO_KEY = 'lca_sso_initiated';
+
 const SSORedirect = () => {
-  const hasAttempted = useRef(false);
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
-    console.log('🔄 UnauthRoutes: SSORedirect rendered');
-    console.log('🔄 UnauthRoutes: Full URL:', window.location.href);
-
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const error = urlParams.get('error');
 
-    console.log('🔄 UnauthRoutes: code in URL:', code ? 'YES' : 'NO');
-    console.log('🔄 UnauthRoutes: error in URL:', error || 'none');
-
-    // OAuth callback — let Amplify process it, don't re-trigger SSO
+    // OAuth callback — code or error in URL means Amplify is processing, never re-trigger
     if (code || error) {
-      console.log('✅ UnauthRoutes: OAuth callback detected, waiting for Amplify to process');
       return;
     }
 
-    // Already attempted SSO this session — don't loop
-    if (hasAttempted.current) {
-      console.log('⚠️ UnauthRoutes: SSO already attempted, not retrying');
+    // Already initiated SSO — code_verifier is in localStorage, don't overwrite it
+    if (sessionStorage.getItem(SSO_KEY)) {
       return;
     }
 
-    hasAttempted.current = true;
+    sessionStorage.setItem(SSO_KEY, '1');
 
     // Listen for auth failures so we can show an error instead of looping
     const unsubscribe = Hub.listen('auth', ({ payload: { event, data } }) => {
@@ -61,7 +54,7 @@ const SSORedirect = () => {
     return (
       <div style={{ textAlign: 'center', marginTop: '50px' }}>
         <p style={{ color: 'red' }}>Authentication error: {authError}</p>
-        <button type="button" onClick={() => { hasAttempted.current = false; setAuthError(null); }}>
+        <button type="button" onClick={() => { sessionStorage.removeItem(SSO_KEY); setAuthError(null); }}>
           Retry
         </button>
       </div>
