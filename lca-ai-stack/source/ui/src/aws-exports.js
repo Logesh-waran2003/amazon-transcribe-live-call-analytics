@@ -19,7 +19,7 @@ const awsmobile = {
     scope: ['email', 'openid', 'phone'],
     redirectSignIn: REACT_APP_APP_URL,
     redirectSignOut: REACT_APP_APP_URL,
-    responseType: 'code',
+    responseType: 'token',
   },
   aws_cognito_login_mechanisms: ['email'],
   aws_cognito_mfa_configuration: 'OFF',
