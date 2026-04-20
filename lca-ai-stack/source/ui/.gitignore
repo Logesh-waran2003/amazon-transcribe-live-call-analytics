@@ -44,6 +44,7 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 .env*
+!.env.wellington
 
 public/lex-web-ui-loader-config.json
 public/lex-web-ui-loader.css

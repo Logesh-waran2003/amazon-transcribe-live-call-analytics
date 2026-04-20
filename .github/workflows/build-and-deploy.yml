@@ -29,20 +29,7 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Write .env
-        run: |
-          cat > .env << 'EOF'
-          REACT_APP_AWS_REGION=us-east-1
-          REACT_APP_USER_POOL_ID=us-east-1_6JEU3PY0y
-          REACT_APP_USER_POOL_CLIENT_ID=2c1s4jqhtk47uputedufchhp9n
-          REACT_APP_IDENTITY_POOL_ID=us-east-1:ccc8847b-1563-4b39-856b-953df1c98dfc
-          REACT_APP_APPSYNC_GRAPHQL_URL=https://v7a65whwxbdsdd3woxzuoxa52i.appsync-api.us-east-1.amazonaws.com/graphql
-          REACT_APP_COGNITO_DOMAIN=tih-wellington-lca.auth.us-east-1.amazoncognito.com
-          REACT_APP_APP_URL=https://dmvpxsw4w04go.cloudfront.net
-          REACT_APP_SETTINGS_PARAMETER=lca-settings-wellington
-          REACT_APP_ENABLE_LEX_AGENT_ASSIST=false
-          DISABLE_ESLINT_PLUGIN=true
-          EOF
-          sed -i 's/^          //' .env
+        run: cp .env.wellington .env
 
       - name: Install dependencies
         run: bun install
