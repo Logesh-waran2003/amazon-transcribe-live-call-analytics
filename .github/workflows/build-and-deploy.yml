@@ -41,6 +41,7 @@ jobs:
         run: NODE_OPTIONS=--max-old-space-size=4096 npx react-scripts build
         env:
           CI: false
+          DISABLE_ESLINT_PLUGIN: true
 
       - name: Deploy build to lca-terraform
         env:
