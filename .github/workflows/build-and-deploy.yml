@@ -28,9 +28,6 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
 
-      - name: Write .env
-        run: cp .env.wellington .env
-
       - name: Install dependencies
         run: bun install
 
