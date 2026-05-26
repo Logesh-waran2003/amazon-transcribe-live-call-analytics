@@ -6,6 +6,7 @@ on:
     paths:
       - 'lca-ai-stack/source/ui/**'
       - 'lca-ai-stack/deployment/**'
+      - '.github/workflows/**'
 
   workflow_dispatch:
 
