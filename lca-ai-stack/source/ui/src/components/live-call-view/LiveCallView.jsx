@@ -1,9 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import React, { useEffect, useMemo, useState } from 'react';
-import { Auth } from 'aws-amplify';
+import { Auth, Logger } from 'aws-amplify';
 import { FiPhoneOff } from 'react-icons/fi';
-import { Logger } from 'aws-amplify';
 
 import useCallsContext from '../../contexts/calls';
 import useSettingsContext from '../../contexts/settings';
@@ -57,6 +56,8 @@ const LiveCallView = () => {
     return mapped[0] || null;
   }, [calls, userEmail, settings]);
 
+  const liveCallId = liveCall?.callId || null;
+
   useEffect(() => {
     if (!liveCall) {
       setLiveTranscriptCallId(null);
@@ -72,7 +73,7 @@ const LiveCallView = () => {
     return () => {
       setLiveTranscriptCallId(null);
     };
-  }, [liveCall?.callId]);
+  }, [liveCallId]);
 
   if (!liveCall) {
     return (
