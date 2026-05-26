@@ -1,24 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import CallListBreadCrumbs from '../call-list/breadcrumbs';
-import CallDetailsBreadCrumbs from '../call-details/breadcrumbs';
+const NavTabs = ({ activeTab, setActiveTab }) => (
+  <div className="nav-tabs-container">
+    <button
+      type="button"
+      className={`nav-tab-btn ${activeTab === 'live' ? 'nav-tab-btn--active' : ''}`}
+      onClick={() => setActiveTab('live')}
+    >
+      <span className="live-dot" />
+      Live Call
+    </button>
+    <button
+      type="button"
+      className={`nav-tab-btn ${activeTab === 'history' ? 'nav-tab-btn--active' : ''}`}
+      onClick={() => setActiveTab('history')}
+    >
+      Call History
+    </button>
+  </div>
+);
 
-const Breadcrumbs = () => {
-  const { path } = useRouteMatch();
-
-  return (
-    <Switch>
-      <Route exact path={path}>
-        <CallListBreadCrumbs />
-      </Route>
-      <Route path={`${path}/:callId`}>
-        <CallDetailsBreadCrumbs />
-      </Route>
-    </Switch>
-  );
-};
-
-export default Breadcrumbs;
+export default NavTabs;

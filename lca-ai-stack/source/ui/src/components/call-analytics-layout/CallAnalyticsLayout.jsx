@@ -15,9 +15,9 @@ import useCallsGraphQlApi from '../../hooks/use-calls-graphql-api';
 
 import CallList from '../call-list';
 import CallDetails from '../call-details';
+import LiveCallView from '../live-call-view/LiveCallView';
 import { appLayoutLabels } from '../common/labels';
 
-import Navigation from './navigation';
 import Breadcrumbs from './breadcrumbs';
 import ToolsPanel from './tools-panel';
 import SplitPanel from './calls-split-panel';
@@ -27,12 +27,10 @@ import {
   PERIODS_TO_LOAD_STORAGE_KEY,
 } from '../call-list/calls-table-config';
 
-import useAppContext from '../../contexts/app';
-
 const logger = new Logger('CallAnalyticsLayout');
 
 const CallAnalyticsLayout = () => {
-  const { navigationOpen, setNavigationOpen } = useAppContext();
+  const [activeTab, setActiveTab] = useState('history');
 
   const { path } = useRouteMatch();
   logger.debug('path', path);
@@ -104,33 +102,38 @@ const CallAnalyticsLayout = () => {
     toolsOpen,
   };
 
+  const renderContent = () => {
+    if (activeTab === 'live') {
+      return <LiveCallView />;
+    }
+    return (
+      <Switch>
+        <Route exact path={path}>
+          <CallList />
+        </Route>
+        <Route path={`${path}/:callId`}>
+          <CallDetails />
+        </Route>
+      </Switch>
+    );
+  };
+
   return (
     <CallsContext.Provider value={callsContextValue}>
       <AppLayout
         headerSelector="#top-navigation"
-        navigation={<Navigation />}
-        navigationOpen={navigationOpen}
-        onNavigationChange={({ detail }) => setNavigationOpen(detail.open)}
-        breadcrumbs={<Breadcrumbs />}
+        navigationHide
+        breadcrumbs={<Breadcrumbs activeTab={activeTab} setActiveTab={setActiveTab} />}
         notifications={<Flashbar items={notifications} />}
         tools={<ToolsPanel />}
         toolsOpen={toolsOpen}
         onToolsChange={({ detail }) => setToolsOpen(detail.open)}
-        splitPanelOpen={splitPanelOpen}
+        splitPanelOpen={activeTab === 'history' ? splitPanelOpen : false}
         onSplitPanelToggle={onSplitPanelToggle}
         splitPanelSize={splitPanelSize}
         onSplitPanelResize={onSplitPanelResize}
-        splitPanel={<SplitPanel />}
-        content={
-          <Switch>
-            <Route exact path={path}>
-              <CallList />
-            </Route>
-            <Route path={`${path}/:callId`}>
-              <CallDetails />
-            </Route>
-          </Switch>
-        }
+        splitPanel={activeTab === 'history' ? <SplitPanel /> : null}
+        content={renderContent()}
         ariaLabels={appLayoutLabels}
       />
     </CallsContext.Provider>
