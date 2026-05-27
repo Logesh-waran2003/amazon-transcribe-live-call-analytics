@@ -30,7 +30,7 @@ import {
 const logger = new Logger('CallAnalyticsLayout');
 
 const CallAnalyticsLayout = () => {
-  const [activeTab, setActiveTab] = useState('history');
+  const [activeTab, setActiveTab] = useState('live');
 
   const { path } = useRouteMatch();
   logger.debug('path', path);

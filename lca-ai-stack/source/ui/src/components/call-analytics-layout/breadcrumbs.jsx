@@ -1,6 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 import React from 'react';
+import { TbHistory } from 'react-icons/tb';
 
 const NavTabs = ({ activeTab, setActiveTab }) => (
   <div className="nav-tabs-container">
@@ -10,14 +11,15 @@ const NavTabs = ({ activeTab, setActiveTab }) => (
       onClick={() => setActiveTab('live')}
     >
       <span className="live-dot" />
-      Live Call
+      Live call
     </button>
     <button
       type="button"
       className={`nav-tab-btn ${activeTab === 'history' ? 'nav-tab-btn--active' : ''}`}
       onClick={() => setActiveTab('history')}
     >
-      Call History
+      <TbHistory style={{ fontSize: '14px', color: '#ffffff' }} />
+      <span style={{ color: '#ffffff' }}>Call history</span>
     </button>
   </div>
 );

@@ -93,6 +93,7 @@ const LiveCallView = () => {
       item={liveCall}
       setToolsOpen={setToolsOpen}
       callTranscriptPerCallId={callTranscriptPerCallId}
+      isLiveCall
     />
   );
 };
