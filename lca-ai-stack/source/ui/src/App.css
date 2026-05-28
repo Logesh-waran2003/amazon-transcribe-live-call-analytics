@@ -29,11 +29,12 @@
 .nav-tab-btn {
     border: 1.5px solid #111827;
     background: #111827;
-    font-weight: 500;
+    font-weight: 700;
     color: #ffffff;
     border-radius: 6px;
     padding: 6px 16px;
     font-size: 13px;
+    letter-spacing: -0.01em;
     cursor: pointer;
     transition: background 120ms ease, border 120ms ease;
     display: inline-flex;
@@ -44,7 +45,7 @@
 .nav-tab-btn--active {
     /* Both tabs are dark; active state kept for JS toggle logic */
     border: 1.5px solid #111827;
-    font-weight: 500;
+    font-weight: 700;
     color: #ffffff;
 }
 
@@ -69,8 +70,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 60vh;
-    text-align: center;
+    padding: 64px 24px;
+    gap: 10px;
+    background: #ffffff;
+    width: 100%;
 }
 
 .live-call-empty-icon {
@@ -87,15 +90,19 @@
 }
 
 .live-call-empty-heading {
-    font-weight: 500;
+    font-weight: 700;
     color: #1f2937;
     font-size: 15px;
-    margin: 0 0 8px 0;
+    letter-spacing: -0.01em;
+    margin: 0;
 }
 
 .live-call-empty-subtext {
     font-size: 13px;
+    font-weight: 700;
     color: #9ca3af;
     max-width: 340px;
     line-height: 1.6;
+    text-align: center;
+    letter-spacing: -0.01em;
 }

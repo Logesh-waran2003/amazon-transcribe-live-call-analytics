@@ -120,10 +120,10 @@ const CallAnalyticsLayout = () => {
 
   return (
     <CallsContext.Provider value={callsContextValue}>
+      <Breadcrumbs activeTab={activeTab} setActiveTab={setActiveTab} />
       <AppLayout
         headerSelector="#top-navigation"
         navigationHide
-        breadcrumbs={<Breadcrumbs activeTab={activeTab} setActiveTab={setActiveTab} />}
         notifications={<Flashbar items={notifications} />}
         tools={<ToolsPanel />}
         toolsOpen={toolsOpen}

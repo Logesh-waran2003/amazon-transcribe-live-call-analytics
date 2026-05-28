@@ -11,7 +11,7 @@ const NavTabs = ({ activeTab, setActiveTab }) => (
       onClick={() => setActiveTab('live')}
     >
       <span className="live-dot" />
-      Live call
+      <span style={{ color: '#ffffff' }}>Live call</span>
     </button>
     <button
       type="button"

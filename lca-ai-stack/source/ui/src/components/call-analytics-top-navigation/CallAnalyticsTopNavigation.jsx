@@ -16,7 +16,7 @@ const CallAnalyticsTopNavigation = () => {
     <div
       id="top-navigation"
       style={{
-        background: '#111827',
+        background: '#0d1321',
         padding: '0 24px',
         height: '52px',
         display: 'flex',
@@ -27,12 +27,13 @@ const CallAnalyticsTopNavigation = () => {
         zIndex: 1002,
       }}
     >
-      <span style={{ color: '#f9fafb', fontSize: '15px', fontWeight: 500, letterSpacing: '-0.01em' }}>
+      <span style={{ color: '#ffffff', fontSize: '15px', fontWeight: 700, letterSpacing: '-0.01em' }}>
         Live Call Analytics with Agent Assist
       </span>
-      <span style={{ color: '#9ca3af', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+      <span style={{ color: '#cbd5e1', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
         <TbUserCircle style={{ fontSize: '15px' }} />
         {userId}
+        <span style={{ fontSize: '10px' }}>▼</span>
       </span>
     </div>
   );
