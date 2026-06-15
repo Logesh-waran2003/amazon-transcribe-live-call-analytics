@@ -14,12 +14,11 @@ Microsoft Entra ID SSO via Cognito Hosted UI is fully implemented and working.
 - Allowed email domain: crcgroup.com
 
 ## Working Directory
-`lca-ai-stack/source/ui`
+Repo root (UI is at the top level)
 
 ## Build & Deploy
 ```bash
 # Build
-cd lca-ai-stack/source/ui
 NODE_OPTIONS=--max-old-space-size=1536 npm run build
 
 # Deploy

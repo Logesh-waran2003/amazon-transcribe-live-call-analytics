@@ -4,8 +4,11 @@ on:
   push:
     branches: [develop]
     paths:
-      - 'lca-ai-stack/source/ui/**'
-      - 'lca-ai-stack/deployment/**'
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.env*'
       - '.github/workflows/**'
 
   workflow_dispatch:
@@ -13,9 +16,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: lca-ai-stack/source/ui
 
     steps:
       - name: Checkout source repo
@@ -45,11 +45,10 @@ jobs:
         env:
           SHORT_SHA: ${{ github.sha }}
         run: |
-          cd $GITHUB_WORKSPACE
           git clone https://x-access-token:${{ secrets.LCA_TERRAFORM_PAT }}@github.com/Logesh-waran2003/lca-terraform.git /tmp/lca-terraform
           cd /tmp/lca-terraform
           rm -rf build/*
-          cp -r $GITHUB_WORKSPACE/lca-ai-stack/source/ui/build/* build/
+          cp -r $GITHUB_WORKSPACE/build/* build/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add build/
