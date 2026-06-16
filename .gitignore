@@ -43,8 +43,17 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 
-.env*
-!.env.wellington
+# Environment files - keep local .env private, commit environment templates
+.env
+.env.local
+.env.*.local
+
+# Allow environment-specific templates
+!.env.sandbox
+!.env.dev
+!.env.uat
+!.env.prod
+!.env.example
 
 public/lex-web-ui-loader-config.json
 public/lex-web-ui-loader.css
