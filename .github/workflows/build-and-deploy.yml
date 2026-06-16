@@ -35,6 +35,12 @@ jobs:
       - name: Download Lex Web UI assets
         run: chmod +x download-lexwebui.sh && ./download-lexwebui.sh
 
+      - name: Select environment file
+        run: |
+          # develop branch uses UAT environment
+          cp .env.uat .env
+          echo "Building with UAT environment"
+
       - name: Build
         run: NODE_OPTIONS=--max-old-space-size=4096 npx react-scripts build
         env:
